@@ -1,0 +1,2 @@
+# Make sure C doesn't steal the show
+*.c linguist-detectable=false
