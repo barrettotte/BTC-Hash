@@ -47,7 +47,7 @@ uint32_t uint32Swap(uint32_t val){
     return (val << 16) | (val >> 16);
 }
 
-void calculateHash(const uint8_t input[], uint32_t hash[8]){
+void sha256_hash(const uint8_t msg[], uint32_t hash[8]){
 
     // Init hash -> first 32-bits of the fractional parts of the square roots of the first 8 primes [2..19]
     hash[0] = 0x6a09e667; hash[1] = 0xbb67ae85; hash[2] = 0x3c6ef372, hash[3] = 0xa54ff53a;
@@ -66,19 +66,22 @@ void calculateHash(const uint8_t input[], uint32_t hash[8]){
     };
 
     // Pre-processing
-    uint64_t msgBytes = strlen((char *) input);
+    uint64_t msgBytes = strlen((char *) msg);
+    printf("\n-----(SHA256)  strlen %d bytes (message)-----\n", (int)msgBytes);
+    //printf("\n-----(SHA256)  sizeof %d bytes (message)-----\n", (int) sizeof &msg);
     uint64_t msgBits = msgBytes * 8;
     
     uint32_t numBlocks = 1 + ((msgBits + 16 + 64) / 512); //Round up num blocks needed
     uint32_t* paddedInput = calloc((512 / 32) * numBlocks, 32); // ((16) * num blocks, 32) (512 * num blocks [bits])
-    memcpy(paddedInput, input, msgBytes);
-    ((uint8_t*)paddedInput)[msgBytes] = 0x80; //append 1 bit in big-endian
+    memcpy(paddedInput, msg, msgBytes);
+    ((uint8_t*)paddedInput)[msgBytes] = 0x80; // append 1 bit in big-endian
 
     // convert from little to big-endian
     for(uint8_t i = 0; i < (numBlocks * 16) - 1; i++) {
         paddedInput[i] = uint32Swap(paddedInput[i]);
     }
     paddedInput[((numBlocks * 512 - 64) / 32) + 1] = msgBits;
+    
 
     // break message into 512-bit chunks
     for(uint8_t i = 0; i < numBlocks; i++) {

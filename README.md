@@ -26,11 +26,12 @@ to produce the SHA-256 digest in one call rather than 3.
 
 
 ## References
+* Mined block used in implementation https://www.blockchain.com/btc/block-height/250000
+* Inspiration for the project [Mining BTC on the Apollo Guidance Computer](http://www.righto.com/2019/07/bitcoin-mining-on-apollo-guidance.html)
 * BTC Protocol https://en.bitcoin.it/wiki/Protocol_documentation
 * BTC mining the hard way http://www.righto.com/2014/02/bitcoin-mining-hard-way-algorithms.html
-* Pre-mined block used for POC https://www.blockchain.com/btc/block/000000000000003887df1f29024b06fc2200b55f8af8f35453d7be294df2d214
 * Test vectors for SHA https://www.di-mgt.com.au/sha_testvectors.html
-* SHA-256 calculator https://www.xorbin.com/tools/sha256-hash-calculator
+* SHA-256 calculator https://emn178.github.io/online-tools/sha256.html
 * SHA-256 pseudocode https://en.wikipedia.org/wiki/SHA-2#pseudocode
 * SHA-256 spec http://csrc.nist.gov/publications/fips/fips180-2/fips180-2withchangenotice.pdf
 
