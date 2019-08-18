@@ -1,19 +1,15 @@
 # IBMi-BTC-Hash
 
 
-A really stupid side project to see if I could make the bitcoin hashing and SHA-256 algorithms in only RPGLE.
+A really stupid side project idea I thought of driving to work one morning. I wanted to see if I could make the bitcoin hashing and SHA-256 algorithms in only RPGLE.
 
 I also wanted some more practice with programming in RPGLE and thought this would be the perfect opportunity (why I thought that is beyond me).
-
 
 
 ## SHA-256
 For sanity's sake, I prototyped the whole thing in C first using the 
 [SHA-256 specification](http://csrc.nist.gov/publications/fips/fips180-2/fips180-2withchangenotice.pdf)
-and some [pseudocode](https://en.wikipedia.org/wiki/SHA-2#pseudocode). 
-This implementation is probably slow and efficient. 
-I don't really know better honestly, I'm just assuming since my C is pretty weak.
-Then it was "just" a translation from C to RPGLE.
+and some [pseudocode](https://en.wikipedia.org/wiki/SHA-2#pseudocode). Then it was "just" a translation from C to RPGLE.
 
 
 I saw a lot of implementations had multiple functions (init,process,final) and a sha256_context struct. 
@@ -23,7 +19,7 @@ to produce the SHA-256 digest in one call rather than 3.
 
 ## Bitcoin Hashing Algorithm
 I followed the logic laid out on the [bitcoin wiki](https://en.bitcoin.it/wiki/Block_hashing_algorithm) for the
-hashing algorithm. The hardest parts was getting my double SHA-256 hash working correctly 
+hashing algorithm. The hardest part was getting my double SHA-256 hash working correctly 
 (it took me 2 hours to realize I was using the wrong endianness)
 
 
