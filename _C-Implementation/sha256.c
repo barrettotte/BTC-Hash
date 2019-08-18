@@ -91,7 +91,7 @@ void sha256_hash(const uint8_t msg[], const uint64_t msgBytes, uint32_t hash[8])
             w[j] = w[j-16] + s0 + w[j-7] + s1;
         }
 
-        //## Init vars to current hash val
+        // Init vars to current hash val
         uint32_t a = hash[0]; uint32_t b = hash[1]; uint32_t c = hash[2]; uint32_t d = hash[3];
         uint32_t e = hash[4]; uint32_t f = hash[5]; uint32_t g = hash[6]; uint32_t h = hash[7];
 

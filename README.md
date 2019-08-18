@@ -23,7 +23,7 @@ hashing algorithm. The hardest part was getting my double SHA-256 hash working c
 (it took me 2 hours to realize I was using the wrong endianness)
 
 
-## C-Implementation Sample
+## C Implementation Sample
 Calculating/outputting hash rate every 100,000 iterations.
 
 ```
@@ -36,6 +36,9 @@ Nonce  2000000 : 33bd6d0f054d21a860044af4107480150546f80fd80f4247ec19e4bbb72c969
 ```
 
 
+## RPGLE Implementation Sample
+In progress...
+
 
 ## References
 * Mined block used in implementation https://www.blockchain.com/btc/block-height/250000
@@ -44,7 +47,11 @@ Nonce  2000000 : 33bd6d0f054d21a860044af4107480150546f80fd80f4247ec19e4bbb72c969
 * BTC Protocol https://en.bitcoin.it/wiki/Protocol_documentation
 * BTC mining the hard way http://www.righto.com/2014/02/bitcoin-mining-hard-way-algorithms.html
 * Test vectors for SHA https://www.di-mgt.com.au/sha_testvectors.html
-* SHA-256 calculator https://emn178.github.io/online-tools/sha256.html
+* SHA-256 calculator
+ * https://emn178.github.io/online-tools/sha256.html
+ * https://www.fileformat.info/tool/hash.htm
 * SHA-256 pseudocode https://en.wikipedia.org/wiki/SHA-2#pseudocode
 * SHA-256 spec http://csrc.nist.gov/publications/fips/fips180-2/fips180-2withchangenotice.pdf
-
+* RPGIV Redbooks
+ * https://www.redbooks.ibm.com/redbooks/pdfs/sg245402.pdf
+* Bit shifting in RPG https://stackoverflow.com/questions/44560356/bit-shifting-in-rpgle
