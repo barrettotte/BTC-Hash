@@ -65,18 +65,11 @@ void sha256_hash(const uint8_t msg[], const uint64_t msgBytes, uint32_t hash[8])
         0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
     };
 
-    // printf("\n-------MSG---------\n");
-    // for(int i = 0 ; i < 32; i++){
-    //     printf("%.2x", msg[i]);
-    // }
-    // printf("\n-------------------\n");
-
     // Pre-processing
-    //uint64_t msgBytes = strlen((char *) msg);
     uint64_t msgBits = msgBytes * 8;
     
-    uint32_t numBlocks = 1 + ((msgBits + 16 + 64) / 512); //Round up num blocks needed
-    uint32_t* paddedInput = calloc((512 / 32) * numBlocks, 32); // ((16) * num blocks, 32) (512 * num blocks [bits])
+    uint32_t numBlocks = 1 + ((msgBits + 16 + 64) / 512); // calc blocks needed
+    uint32_t* paddedInput = calloc(16 * numBlocks, 32);
     memcpy(paddedInput, msg, msgBytes);
     ((uint8_t*)paddedInput)[msgBytes] = 0x80; // append 1 bit in big-endian
 
@@ -85,14 +78,13 @@ void sha256_hash(const uint8_t msg[], const uint64_t msgBytes, uint32_t hash[8])
         paddedInput[i] = uint32Swap(paddedInput[i]);
     }
     paddedInput[((numBlocks * 512 - 64) / 32) + 1] = msgBits;
-    
 
     // break message into 512-bit chunks
     for(uint8_t i = 0; i < numBlocks; i++) {
         uint32_t* w = calloc(64, 32); // message schedule array [0..63] of 32-bit words
-        memcpy(w, &paddedInput[i * 16], 512); // copy chunk into 16 words w[0..15] of message schedule array
+        memcpy(w, &paddedInput[i * 16], 512); // copy chunk to w[0..15] of message schedule array
 
-        // Extend first 16 words into remaining 48 words w[16..63] of message schedule array
+        // Extend first 16 words to w[16..63] of message schedule array
         for(uint8_t j = 16; j < 64; j++) {
             uint32_t s0 = rotateRight(w[j-15], 7) ^ rotateRight(w[j-15], 18) ^ (w[j-15] >> 3);
             uint32_t s1 = rotateRight(w[j-2], 17) ^ rotateRight(w[j-2], 19) ^ (w[j-2] >> 10);

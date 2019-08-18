@@ -3,27 +3,15 @@
 #include <stdlib.h>
 #include "sha256.h"
 
-
 /* Test vectors provided by https://www.di-mgt.com.au/sha_testvectors.html
-   (Skipped test vector 6 out of laziness) */
+   (Skipped test vector 5+6 out of laziness)
+*/
 
 void printHash(uint32_t* hash){
     printf("  Actual:   ");
     for (int i = 0; i < 8; i++){
 		printf("%.2x ", hash[i]);
 	}
-}
-
-void testBlockHash(){
-    printf("\nTest Block Hash\n");
-    uint32_t hash[8];
-    const uint8_t msg[] = {
-      //"020000000000000000000009c2e82d884ec07b4aafb64ca3ef83baca2b6b0b5eb72c8f0216ec1eafaca8ca59d182cbf94f29b50b06ac4207b883f380b9bf547fe8fed72351FCF9471972DBF200917661"
-      "cdbedd22b3a25804eea6d99d033af6541442f33929d38f115c42c22560c3e65c"
-    };
-    sha256_hash(msg, (uint64_t)strlen((char*)msg), hash);
-    printHash(hash);
-    //printf("\n  Expected: 38f1abde cb7e001a b403aecd 885a010d 5a254054 e479d335 273eaa1c bdd62674\n");
 }
 
 void testVector1(){
@@ -68,7 +56,6 @@ int main() {
     testVector1();
     testVector2();
     testVector3();
-    testVector4();
-    testBlockHash();  
+    testVector4(); 
     return 0;
 }

@@ -67,10 +67,7 @@ int main() {
     }; 
     // hash1: a176abc01d8c2a7f1c002b0ebd21eeeb1219de84b8b69ff2096820153b597213
     // hash2: 7161b22d692b1d76693e6b19fc8482bf41cda5ef66fc81f6ddbc6d982ff1e972
-
-    uint32_t targetNonce = 9533025; // 
-    uint32_t rounds = 10000;
-    uint32_t nonce = 0;//targetNonce - rounds;
+    uint32_t outputRate = 100000, nonce = 0;
     uint32_t hash1[8], hash2[8];
     clock_t start = clock();
 
@@ -86,7 +83,7 @@ int main() {
             swapped[i] = bigToLittleEndian(hash1[i]);
         }
         sha256_hash((uint8_t*)swapped, (uint64_t) 32, hash2);
-        if(nonce % 100000 == 0){
+        if(nonce % outputRate == 0){
             printf("Nonce %8d : ", nonce);
             printHash(hash2);
             printHashRate(start, nonce);
