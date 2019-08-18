@@ -47,7 +47,7 @@ uint32_t uint32Swap(uint32_t val){
     return (val << 16) | (val >> 16);
 }
 
-void sha256_hash(const uint8_t msg[], uint32_t hash[8]){
+void sha256_hash(const uint8_t msg[], const uint64_t msgBytes, uint32_t hash[8]){
 
     // Init hash -> first 32-bits of the fractional parts of the square roots of the first 8 primes [2..19]
     hash[0] = 0x6a09e667; hash[1] = 0xbb67ae85; hash[2] = 0x3c6ef372, hash[3] = 0xa54ff53a;
@@ -65,16 +65,14 @@ void sha256_hash(const uint8_t msg[], uint32_t hash[8]){
         0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
     };
 
-    printf("\n-------MSG---------\n");
-    for(int i = 0 ; i < 32; i++){
-        printf("%.2x", msg[i]);
-    }
-    printf("\n-------------------\n");
+    // printf("\n-------MSG---------\n");
+    // for(int i = 0 ; i < 32; i++){
+    //     printf("%.2x", msg[i]);
+    // }
+    // printf("\n-------------------\n");
 
     // Pre-processing
-    uint64_t msgBytes = strlen((char *) msg);
-    printf("\n-----(SHA256)  strlen %d bytes (message)-----\n", (int)msgBytes);
-    //printf("\n-----(SHA256)  sizeof %d bytes (message)-----\n", (int) sizeof &msg);
+    //uint64_t msgBytes = strlen((char *) msg);
     uint64_t msgBits = msgBytes * 8;
     
     uint32_t numBlocks = 1 + ((msgBits + 16 + 64) / 512); //Round up num blocks needed
