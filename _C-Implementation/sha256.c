@@ -65,6 +65,12 @@ void sha256_hash(const uint8_t msg[], uint32_t hash[8]){
         0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
     };
 
+    printf("\n-------MSG---------\n");
+    for(int i = 0 ; i < 32; i++){
+        printf("%.2x", msg[i]);
+    }
+    printf("\n-------------------\n");
+
     // Pre-processing
     uint64_t msgBytes = strlen((char *) msg);
     printf("\n-----(SHA256)  strlen %d bytes (message)-----\n", (int)msgBytes);

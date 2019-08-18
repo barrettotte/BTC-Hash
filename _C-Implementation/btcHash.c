@@ -16,9 +16,9 @@ int checkHash(uint32_t* s){
 }
 
 void printHash(unsigned char* h) {
-    for(int i=31; i>=0; i--){
+    for(int i = 31; i >= 0; i--){
         char str[3];
-        sprintf(str, "%02x", (int)h[i]);
+        sprintf(str, "%02x", h[i]);
         printf("%s", str);
     }
 }
@@ -27,7 +27,6 @@ void printHashRate(clock_t start, uint32_t nonce){
     printf("%15s", " Hash Rate: ");
     printf("%10f kH/s\n", (1000.0/(clock()-start))*nonce);
 }
-
 
 uint32_t swap(uint32_t val){
     val = ((val << 8) & 0xFF00FF00 ) | ((val >> 8) & 0xFF00FF );
@@ -47,6 +46,7 @@ int main() {
     uint8_t header[] = {
       "020000000000000000000009c2e82d884ec07b4aafb64ca3ef83baca2b6b0b5eb72c8f0216ec1eafaca8ca59d182cbf94f29b50b06ac4207b883f380b9bf547fe8fed72351FCF9471972DBF200917661"
     }; // cdbedd22b3a25804eea6d99d33af6541442f33929d38f115c42c22560c3e65c
+       // cdbedd22b3a25804eea6d99d033af6541442f33929d38f115c42c22560c3e65c   ???? WHAT
 
     //uint32_t targetNonce = 9533025; // 
     //uint32_t rounds = 1000000;
@@ -59,34 +59,37 @@ int main() {
         //header[77] = (nonce >> 8) & 0xFF;
         //header[78] = (nonce >> 16) & 0xFF; 
         //header[79] = (nonce >> 24) & 0xFF;
-
+        
         sha256_hash(header, hash1);
         for (int i = 0; i < 8; i++){
 		    printf("%.2x", hash1[i]);
 	    }
-        printf("\nstrlen -- %d bytes", (int) strlen((char *) hash1));
-        printf("\nsizeof -- %d bytes\n", (int)sizeof hash1);
+        printf("\nstrlen hash1 -- %d bytes", (int) strlen((char *) hash1));
+        printf("\nsizeof hash1 -- %d bytes\n", (int)sizeof hash1);
         printf("\n");
 
-        // for(int i = 0; i < 32; i++){
-        //     hash1[i] = swap(hash1[i]);
+        // target: 5a51e9cb50e28e5b0e894458c88b980f9c8c05abb48efae1658c1d64a635708c
+
+        // uint32_t swapped[8];
+        // for(int i = 0; i < 8; i++){
+        //     swapped[i] = swap(hash1[i]);
         // }
-        // for (int i = 0; i < 8; i++){
-		//     printf("%.2x", hash1[i]);
-	    // }
-        // printf("\n");
-    
-    
-        // target: dc393254cb3ed94116e1b989b7898126d8a07ea478d0a2626bd97ee06910b5f8
+
         uint8_t tmp[32];
+        //memcpy(tmp, swapped, 32);
         memcpy(tmp, hash1, 32);
+
+        printf("\n");
         sha256_hash(tmp, hash2);
+        //sha256_hash((uint8_t*) hash1, hash2);
 
         printHash((uint8_t*)hash2);
         printf("\n");
         for (int i = 0; i < 8; i++){
 		    printf("%.2x", hash2[i]);
 	    }
+        printf("\nstrlen hash2 -- %d bytes", (int) strlen((char *) hash2));
+        printf("\nsizeof hash2 -- %d bytes\n", (int)sizeof hash2);
         printf("\n");
         
         if(nonce % 25000 == 0){
