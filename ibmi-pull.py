@@ -23,7 +23,9 @@ try:
       print("  Saved " + filepath)
 except ftplib.all_errors as e:
   print("Error occurred with FTP.\n" + str(e))
+  exit(1)
 except Exception as e:
   print("Some other error occurred\n" + str(e))
+  exit(1)
 finally:
   ftp_client.quit()
