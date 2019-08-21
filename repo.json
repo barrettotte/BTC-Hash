@@ -1,15 +1,15 @@
 {
-	"library":	"BOLIB",
-	"spfs": [
-		{
-			"name": "QRPGLESRC",
-			"extension": "RPGLE",
-			"members": [
-				{
-					"name": "SHA256"
-				}
-			]
-		}
-	],
-	"output": "./"
+  "library": "BOLIB",
+  "spfs": [
+    {
+      "name": "QRPGLESRC",
+      "extension": "RPGLE",
+      "members": [
+        {
+          "name": "SHA256"
+        }
+      ]
+    }
+  ],
+  "output": "./"
 }

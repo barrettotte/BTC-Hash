@@ -19,9 +19,10 @@ There's no way that translating from C to RPGLE is going to be painless, so its 
 | uint32_t | Uns(10) | 4     |
 
 
-## General things I keep forgetting
+## General things I dont want to forget
 * Turn off syntax checking for SEU -> F13
 * ```DSPLY('HELLO');``` = compile error; Don't forget the space.  ```DSPLY ('HELLO')```
+* Right click emulator > Sysreq > 3
 
 
 ## Hex numbers (Little Endian)
