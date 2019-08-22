@@ -7,6 +7,8 @@ I also wanted some more practice with programming in RPGLE and thought this woul
 
 **However, I got too ambitious and couldn't get it done in the end. (Don't run before you can walk)**
 
+I hope to come back when my knowledge of RPGLE has grown and finish this.
+
 
 ## SHA-256
 For sanity's sake, I prototyped the whole thing in C first using the 
