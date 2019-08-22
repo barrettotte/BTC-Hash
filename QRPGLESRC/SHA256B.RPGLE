@@ -1,49 +1,61 @@
-     H DFTACTGRP(*NO) Debug(*YES) Option(*SrcStmt: *NoDebugIO)
-      /free
-       // Ctl-Opt DftActGrp(*No) Debug(*Yes) Option(*SrcStmt: *NoDebugIO)
-       // Subpar SHA-256 implementation
+     **Free
+       // Scuffed SHA-256 implementation
        // Barrett Otte 2019
        // https://github.com/barrettotte/RPGLE-BTC-Hash
 
-       // Since this will be used for the BTC hash algorithm,
-       //   I decided to make most of this fixed length.
+
+       Ctl-Opt DftActGrp(*No) Option(*SrcStmt: *NoDebugIO);
 
 
-       Dcl-Pr Main EXTPGM('SHA256');
+       Dcl-Pr Main ExtPgm('SHA256');
         // msg      Uns(3) Dim(1024);
         // msgBytes Uns(5);
+       End-Pr;   // TODO: Find out why this is needed
+
+
+       // C Prototypes  (Also known as cheating)
+       Dcl-Pr Memcpy ExtProc('__memcpy');
+         pTarget Pointer value;
+         pSource Pointer value;
+         nLength Uns(10) value;
+       End-Pr;
+
+       Dcl-Pr Memset ExtProc('__memset');
+         pTarget Pointer value;
+         nChar Int(10) value;
+         nBufLen Uns(10) value;
        End-Pr;
 
 
        // Params
-       Dcl-S msg Uns(3) Dim(1024);
-       Dcl-S msgBytes Uns(5);
-
+          Dcl-S msg Uns(3) Dim(512);
+          Dcl-S msgBytes Uns(20);
+       // Dcl-S msg Pointer;
 
        // Variables
-       Dcl-S k Uns(20) Dim(64);         // round constants
-       Dcl-S hash Uns(20) Dim(8);       // hash to return
-       Dcl-S msgBits Uns(5);            // message size in bits
-       Dcl-S numBlocks Uns(3) Inz(17);  // blocks needed to hash msg (max)
-       Dcl-S paddedMsg Uns(20) Dim(272);// 16*17
+       Dcl-S k Uns(10) Dim(64);           // round constants
+       Dcl-S hash Uns(10) Dim(8);         // hash to return
+       Dcl-S msgBits Uns(20);             // message size in bits
+       Dcl-S buffPtr Pointer;             // pointer to msgBuffer
+       Dcl-S msgBuffer Uns(10) Dim(16);   // uint32 [16]
+       Dcl-S w Uns(10) Dim(64);           // message schedule array [MSA]
+       Dcl-S s0 Uns(10);                  // MSA tmp var
+       Dcl-S s1 Uns(10);                  // MSA tmp var
+       Dcl-S t0 Uns(10);                  // compression func tmp var
+       Dcl-S t1 Uns(10);                  // compression func tmp var
 
-       Dcl-S w Uns(20) Dim(64);         // message schedule array
-       Dcl-S s0 Uns(20);                // temp s0
-       Dcl-S s1 Uns(20);                // temp s1
-       Dcl-S t0 Uns(20);                // temp t0
-       Dcl-S t1 Uns(20);                // temp t1
+       Dcl-S a Uns(10);                   // register A  hash[0..3]
+       Dcl-S b Uns(10);                   // register B  hash[4..7]
+       Dcl-S c Uns(10);                   // register C  hash[8..11]
+       Dcl-S d Uns(10);                   // register D  hash[12..15]
+       Dcl-S e Uns(10);                   // register E  hash[16..19]
+       Dcl-S f Uns(10);                   // register F  hash[20..23]
+       Dcl-S g Uns(10);                   // register G  hash[24..27]
+       Dcl-S h Uns(10);                   // register H  hash[28..31]
 
-       Dcl-S a Uns(20);                 // A register
-       Dcl-S b Uns(20);                 // B register
-       Dcl-S c Uns(20);                 // C register
-       Dcl-S d Uns(20);                 // D register
-       Dcl-S e Uns(20);                 // E register
-       Dcl-S f Uns(20);                 // F register
-       Dcl-S g Uns(20);                 // G register
-       Dcl-S h Uns(20);                 // H register
-
-       Dcl-S i Uns(20);                 // iterator
-       Dcl-S j Uns(20);                 // iterator
+       // Junk Variables
+       Dcl-S i Uns(10);                   // iterator
+       Dcl-S j Uns(10);                   // iterator
 
 
        Dsply ('Running SHA-256 test...');
@@ -63,84 +75,73 @@
        // 4189c360b244d82b862073dc4c2e5a23e40bc86aa118ed854e755b335e126983
 
 
-       // Pre-Processing
-       msgBits = msgBytes * 8;
-       numBlocks = 1 + ((msgBits + 80) / 512);
-       // Dsply ('msgBits = ' + %Char(msgBits));
-       // Dsply ('msgBytes = ' + %Char(msgBytes));
-       // Dsply ('numBlocks = ' + %Char(numBlocks));
+       // Sanity checking bitwise functions
+       //For i = 1 to 3;
+       //  Dsply ('msg(' + %Char(i) + ') = ' + %Char(msg(i)));
+       //  Dsply (%Char(ShiftRight(msg(i):2)));
+       //  Dsply (%Char(ShiftLeft(msg(i):10)));
+       //  Dsply (%Char(RotateRight(msg(i):4)));
+       //  Dsply (%Char(RotateLeft(msg(i):16)));
+       //  Dsply (%Char(EndianL2B(msg(i))));
+       //EndFor;
+       //Dsply (%Char(Choose(msg(1):msg(2):msg(3))));
 
-       For i = 1 To msgBytes;
-         paddedMsg(i) = msg(i);
-       EndFor;
-       paddedMsg(msgBytes + 1) = X'80'; //append 1 in big endian
+
+       msgBits = msgBytes * 8;
+
+       Memcpy(%Addr(msgBuffer) : %Addr(msg) : msgBytes);
+       msgBuffer(msgBytes + 1) = X'80'; // append 1 in big endian
 
        // Convert from little to big endian
-       For i = 1 To (numBlocks * 16);
-         // Dsply (%Char(i) + ' before: ' + %Char(paddedMsg(i)));
-         paddedMsg(i) = EndianL2B(paddedMsg(i));
-         // Dsply (%Char(i) + ' after:  ' + %Char(paddedMsg(i)));
+       For i = 1 To msgBytes;
+         msgBuffer(i) = EndianL2B(i);
        EndFor;
 
-       // Dsply ('val ' + %Char(%Int(((numBlocks * 512 - 64) / 32)+1)));
-       paddedMsg(%Int(((numBlocks * 512 - 64) / 32) + 1)) = msgBits;
+       // Copy block to w[0..15] of message schedule array
+       Memcpy(%Addr(w) : %Addr(msgBuffer) : 512);
 
-       // Break message into 512-bit chunks
-       For i = 1 To numBlocks;
-
-          For j = 1 To 64;
-            w((512 * (i - 1)) + j) = paddedMsg((16 * (i - 1)) + j);
-          EndFor;
-
-          // Extend first 16 words to w[16..63] of message schedule array
-          For j = 16 to 64;
-            s0 = %BitXor(RotateRight(w(j-15):7):RotateRight(w(j-15):18));
-            s0 = %BitXor(s0:ShiftRight(w(j-15):3));
-            s1 = %BitXor(RotateRight(w(j-2):17):RotateRight(w(j-2):19));
-            s1 = %BitXor(s1:ShiftRight(w(j-2):10));
-          EndFor;
-
-          // Init registers to current hash values
-          a = hash(1);
-          b = hash(2);
-          c = hash(3);
-          d = hash(4);
-          e = hash(5);
-          f = hash(6);
-          g = hash(7);
-          h = hash(8);
-
-          // Compression function
-          For j = 1 To 64;
-            t0 = h + BigSig1(e) + Choose(e:f:g) + k(j) + w(j);
-          //t1 = BigSig0(a) + Major(a:b:c);
-          //t0 = 0;
-            t1 = 0;
-            h = g;
-            g = f;
-            f = e;
-            e = d + t0;
-            d = c;
-            c = b;
-            b = a;
-            a = t0 + t1;
-          EndFor;
-
-          // Add compressed chunk to current hash val
-          hash(1) = hash(1) + a;
-          hash(2) = hash(2) + b;
-          hash(3) = hash(3) + c;
-          hash(4) = hash(4) + d;
-          hash(5) = hash(5) + e;
-          hash(6) = hash(6) + f;
-          hash(7) = hash(7) + g;
-          hash(8) = hash(8) + h;
-
+       // Extend first 16 words to w[16..63] of message schedule array
+       For i = 17 To 64;
+         s0 = %BitXor(RotateRight(w(i-15):18) : ShiftRight(w(i-15):3));
+         s0 = %BitXor(RotateRight(w(i-15):7) : s0);
+         s1 = %BitXor(RotateRight(w(i-2):19) : ShiftRight(w(i-2):10));
+         s1 = %BitXor(RotateRight(w(i-2):17) : s1);
+         w(i) = w(i-16) + s0 + w(i-7) + s1;
        EndFor;
 
+       // Init registers to current hash value
+       a = hash(1);
+       b = hash(2);
+       c = hash(3);
+       d = hash(4);
+       e = hash(5);
+       f = hash(6);
+       g = hash(7);
+       h = hash(8);
+
+       // Compression function
        For i = 1 To 64;
-         //Dsply ( 'w(' + %Char(i) + ') = ' + %Char(w(i)) );
+         t0 = h + BigSig1(e) + Choose(e:f:g) + k(i) + w(i);
+         t1 = BigSig0(a) + Major(a:b:c);
+         h = g;
+         g = f;
+         e = d + t0;
+         d = c;
+         c = b;
+         b = a;
+         a = t0 + t1;
        EndFor;
+
+       // Add compressed block to current hash val
+       hash(1) = hash(1) + a;
+       hash(2) = hash(2) + b;
+       hash(3) = hash(3) + c;
+       hash(4) = hash(4) + d;
+       hash(5) = hash(5) + e;
+       hash(6) = hash(6) + f;
+       hash(7) = hash(7) + g;
+       hash(8) = hash(8) + h;
+
 
        Dsply ('Success.');
 
@@ -241,7 +242,7 @@
 
        Dcl-Proc ShiftLeft;
          Dcl-Pi *N Uns(20);
-           x       Uns(20);
+           x       Uns(20) const;
            shift   Uns(20) const;
          End-Pi;
          return x * %UnsH(2 ** shift);
@@ -249,7 +250,7 @@
 
        Dcl-Proc ShiftRight;
          Dcl-Pi *N Uns(20);
-           x       Uns(20);
+           x       Uns(20) const;
            shift   Uns(20) const;
          End-Pi;
          return %Div(x : %UnsH(2 ** shift));
@@ -257,7 +258,7 @@
 
        Dcl-Proc EndianL2B;
          Dcl-Pi *N Uns(20);
-           x       Uns(20);
+           x       Uns(20) const;
          End-Pi;
          Dcl-S val Uns(20);
          val = %BitAnd(ShiftLeft(x:8):x'ff00ff00');
@@ -267,7 +268,7 @@
 
        Dcl-Proc RotateRight;
          Dcl-Pi *N Uns(20);
-           x       Uns(20);
+           x       Uns(20) const;
            rot     Uns(20) const;
          End-Pi;
          return %BitOr(ShiftRight(x:rot):ShiftLeft(x:(32-rot)));
@@ -275,7 +276,7 @@
 
        Dcl-Proc RotateLeft;
          Dcl-Pi *N Uns(20);
-           x       Uns(20);
+           x       Uns(20) const;
            rot     Uns(20) const;
          End-Pi;
          return %BitOr(ShiftLeft(x:rot):ShiftRight(x:(32-rot)));
@@ -283,29 +284,25 @@
 
        Dcl-Proc Choose;
          Dcl-Pi *N Uns(20);
-           x       Uns(20);
-           y       Uns(20);
-           z       Uns(20);
+           x       Uns(20) const;
+           y       Uns(20) const;
+           z       Uns(20) const;
          End-Pi;
-         Dcl-S left Uns(20);
-         left = %BitAnd(x:y);
-         return %BitXor(left:(%BitAnd(%BitNot(x):z)));
+         return %BitXor(%BitAnd(x:y):(%BitAnd(%BitNot(x):z)));
        End-Proc;
 
        Dcl-Proc Major;
          Dcl-Pi *N Uns(20);
-           x       Uns(20);
-           y       Uns(20);
-           z       Uns(20);
+           x       Uns(20) const;
+           y       Uns(20) const;
+           z       Uns(20) const;
          End-Pi;
-         Dcl-S val Uns(20);
-         val = %BitXor(%BitAnd(x:y):%BitAnd(x:z));
-         return %BitXor(val:%BitAnd(y:z));
+         return %BitXor(%BitXor(%BitAnd(x:y):%BitAnd(x:z)):%BitAnd(y:z));
        End-Proc;
 
        Dcl-Proc BigSig0;
          Dcl-Pi *N Uns(20);
-           x       Uns(20);
+           x       Uns(20) const;
          End-Pi;
          Dcl-S val Uns(20);
          val = %BitXor(RotateRight(x:2):RotateRight(x:13));
@@ -314,7 +311,7 @@
 
        Dcl-Proc BigSig1;
          Dcl-Pi *N Uns(20);
-           x       Uns(20);
+           x       Uns(20) const;
          End-Pi;
          Dcl-S val Uns(20);
          val = %BitXor(RotateRight(x:6):RotateRight(x:11));
@@ -323,7 +320,7 @@
 
        Dcl-Proc LilSig0;
          Dcl-Pi *N Uns(20);
-           x       Uns(20);
+           x       Uns(20) const;
          End-Pi;
          Dcl-S val Uns(20);
          val = %BitXor(RotateRight(x:7):RotateRight(x:18));
@@ -332,7 +329,7 @@
 
        Dcl-Proc LilSig1;
          Dcl-Pi *N Uns(20);
-           x       Uns(20);
+           x       Uns(20) const;
          End-Pi;
          Dcl-S val Uns(20);
          val = %BitXor(RotateRight(x:17):RotateRight(x:19));
