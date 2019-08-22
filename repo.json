@@ -9,7 +9,7 @@
           "name": "SHA256"
         },
         {
-          "name": "SHA256B"
+          "name": "BTCHASH"
         }
       ]
     }

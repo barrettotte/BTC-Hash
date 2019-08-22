@@ -1,9 +1,11 @@
-# IBMi-BTC-Hash
+# RPGLE-BTC-Hash
 
 
 A really stupid side project idea I thought of driving to work one morning. I wanted to see if I could make the bitcoin hashing and SHA-256 algorithms in only RPGLE.
 
 I also wanted some more practice with programming in RPGLE and thought this would be the perfect opportunity (why I thought that is beyond me).
+
+**However, I got too ambitious and couldn't get it done in the end.**
 
 
 ## SHA-256
@@ -37,7 +39,9 @@ Nonce  2000000 : 33bd6d0f054d21a860044af4107480150546f80fd80f4247ec19e4bbb72c969
 
 
 ## RPGLE Implementation Sample
-In progress...
+Well...I tried
+
+But I don't think I am mentally there. I should do a different project for now...
 
 
 ## References

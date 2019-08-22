@@ -35,3 +35,6 @@ print(endian_l2b(z)) # 33554432
 
 print("")
 print(choose(x,y,z))
+
+
+
