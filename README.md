@@ -5,7 +5,7 @@ A really stupid side project idea I thought of driving to work one morning. I wa
 
 I also wanted some more practice with programming in RPGLE and thought this would be the perfect opportunity (why I thought that is beyond me).
 
-**However, I got too ambitious and couldn't get it done in the end.**
+**However, I got too ambitious and couldn't get it done in the end. (Don't run before you can walk)**
 
 
 ## SHA-256
