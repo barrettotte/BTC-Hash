@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "sha256.h"
+#include "../src/sha256.h"
 
 /* Test vectors provided by https://www.di-mgt.com.au/sha_testvectors.html
    (Skipped test vector 5+6 out of laziness)
